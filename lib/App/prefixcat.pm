@@ -19,6 +19,7 @@ sub run {
             if ($_ eq '-') {
                 $ifh = *STDIN;
             } else {
+                die "Is a directory: $_\n" if -d $_;
                 open $ifh, "<", $_ or die "Can't open input file $_: $!\n";
             }
             push @ifh, $ifh;

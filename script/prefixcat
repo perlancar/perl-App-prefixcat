@@ -22,7 +22,7 @@ sub parse_cmdline {
     Getopt::Long::Configure("gnu_getopt", "no_ignore_case");
     my $res = GetOptions(
         'eval|e=s'       =>
-        sub { $Opts{eval} = eval "no strict; no warnings; sub { $_[1] }" or die "Invalid code in --eval (-e): $@" },
+        sub { $Opts{eval} = eval "no strict; no warnings; sub { $_[1] }" or die "Invalid code in --eval (-e): $@" }, ## no critic: BuiltinFunctions::ProhibitStringyEval
         'format|f=s' => \$Opts{format},
         'separator|s=s' => \$Opts{separator},
         'help|h'           => sub {
@@ -86,7 +86,7 @@ C<$main::linenum> to the current input line (1-based).
 
 Overrides L<--separator, -s>.
 
-back
+=back
 
 
 =head1 EXIT CODES
