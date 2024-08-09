@@ -1,0 +1,108 @@
+#!perl
+
+use 5.010001;
+use strict;
+use warnings;
+
+use App::prefixcat;
+use Getopt::Long;
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
+
+my %Opts = (
+    eval         => undef,
+    format       => "%s",
+    separator    => ":",
+);
+
+sub parse_cmdline {
+    Getopt::Long::Configure("gnu_getopt", "no_ignore_case");
+    my $res = GetOptions(
+        'eval|e=s'       =>
+        sub { $Opts{eval} = eval "no strict; no warnings; sub { $_[1] }" or die "Invalid code in --eval (-e): $@" },
+        'format|f=s' => \$Opts{format},
+        'separator|s=s' => \$Opts{separator},
+        'help|h'           => sub {
+            print <<USAGE;
+Usage:
+  prefixcat [OPTIONS]... [FILE]...
+  prefixcat --help
+Options:
+  --eval, -e
+  --format, -f
+  --separator, -s
+For more details, see the manpage/documentation.
+USAGE
+            exit 0;
+        },
+    );
+    exit 99 if !$res;
+}
+
+# MAIN
+
+parse_cmdline();
+App::prefixcat::run(%Opts);
+
+1;
+# ABSTRACT: Like Unix `cat` but by default prefix each line with filename
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ prefixcat [OPTION]... [FILE]...
+
+
+=head1 DESCRIPTION
+
+
+=head1 OPTIONS
+
+=over
+
+=item * --separator, -s
+
+String, default C<:>. The text used to separate the prefix (filename) and the
+input line.
+
+=item * --format, -f
+
+String, default C<%s>. C<sprintf()> template used to print the prefix
+(filename).
+
+=item * --eval, -e
+
+If specified, will print the result of Perl code for each line of input. Code
+will get the content of line (including the newline) in C<$_>. It should return
+the output line to be printed, or if it returns C<undef>, the content of C<$_>
+will be used as the output line.
+
+Additionally, C<$main::filename> will be set to the current input filename,
+C<$main::filenum> to the current index of input files (1-based), and
+C<$main::linenum> to the current input line (1-based).
+
+Overrides L<--separator, -s>.
+
+back
+
+
+=head1 EXIT CODES
+
+0 on success.
+
+255 on I/O error.
+
+99 on command-line options error.
+
+
+=head1 FAQ
+
+
+=head1 SEE ALSO
+
+B<cat> Unix command
+
+=cut
